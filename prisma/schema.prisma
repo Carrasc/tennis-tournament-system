@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Tournament {
+  id           String        @id @default(cuid())
+  /// Short public code used in the share link, e.g. "K7Q2MX"
+  publicCode   String        @unique
+  /// sha256 of the secret organiser code
+  editCodeHash String        @unique
+  name         String
+  location     String?
+  startDate    DateTime?
+  /// Sets needed to win a match: 2 (best of 3) or 3 (best of 5)
+  setsToWin    Int           @default(2)
+  /// singles | doubles. In doubles each Participant is a team of two.
+  kind         String        @default("singles")
+  /// setup | in_progress | finished
+  status       String        @default("setup")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  participants Participant[]
+  matches      Match[]
+}
+
+model Participant {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name         String
+  /// Second player of a doubles team; null in singles
+  partner      String?
+  seed         Int?
+  createdAt    DateTime   @default(now())
+
+  @@index([tournamentId])
+}
+
+model Match {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  /// 1 = first round; the final has the highest number
+  round        Int
+  /// 0-based position within the round, top to bottom
+  position     Int
+  player1Id    String?
+  player2Id    String?
+  winnerId     String?
+  /// JSON array of sets: [{"a":6,"b":4,"tb":null}, ...]
+  score        String?
+  /// pending | live | finished
+  status       String     @default("pending")
+  /// normal | bye | walkover | retired
+  outcome      String     @default("normal")
+  court        String?
+  scheduledAt  DateTime?
+
+  @@unique([tournamentId, round, position])
+  @@index([tournamentId])
+}

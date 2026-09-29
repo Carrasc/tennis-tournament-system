@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+/*
+  Cotton paper, hard-court blue, an optic-yellow highlight. Poppins for the voice, IBM Plex Mono for small labels.
+  Sections are separated by torn-paper edges (see TornEdge).
+*/
+:root {
+  --paper: #f2f0ea;
+  --paper-light: #faf9f5;
+  --mist: #e1e6ea;
+  --linen: #e8e3d7;
+  --ink: #23262b;
+  --ink-soft: #5d626a;
+  --muted: #8a8e96;
+  --faint: #b6b9bf;
+  --line: rgba(35, 38, 43, 0.11);
+  --line-strong: rgba(35, 38, 43, 0.21);
+  --accent: #34557a;
+  --highlight: #e6eb7c;
+  --live: #3c7a55;
+  --live-bg: #dcebe1;
+  --danger: #b23a32;
+  --card-shadow: 0 1px 2px rgba(35, 38, 43, 0.05), 0 8px 24px -10px rgba(35, 38, 43, 0.18);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-light: var(--paper-light);
+  --color-mist: var(--mist);
+  --color-linen: var(--linen);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --color-live: var(--live);
+  --color-live-bg: var(--live-bg);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-poppins);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  font-size: 106.25%; /* 17px */
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-poppins), -apple-system, sans-serif;
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.highlight {
+  background: linear-gradient(transparent 14%, var(--highlight) 14%, var(--highlight) 90%, transparent 90%);
+  padding: 0 0.25em;
+  margin: 0 -0.25em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-base font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-paper-light hover:bg-accent;
+  }
+  .btn-secondary {
+    @apply border border-line-strong text-ink hover:border-ink;
+  }
+  .btn-quiet {
+    @apply px-3 text-ink-soft underline decoration-line-strong underline-offset-4 hover:text-ink hover:decoration-ink;
+  }
+  .field {
+    @apply block min-h-12 w-full rounded-xl border border-line-strong bg-paper-light px-4 py-2 text-base text-ink placeholder:text-faint focus:border-accent focus:ring-3 focus:ring-accent/15 focus:outline-none;
+  }
+  .label {
+    @apply mb-1.5 block text-[0.95rem] font-medium;
+  }
+  .hint {
+    @apply text-sm text-ink-soft;
+  }
+  .frame {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+  /* The soft raised surface used for match cards and panels. */
+  .card {
+    @apply rounded-2xl border border-line bg-paper-light;
+    box-shadow: var(--card-shadow);
+  }
+  /* Small lowercase mono label with a short rule before it. */
+  .eyebrow {
+    @apply flex items-center gap-3 font-mono text-[0.8rem] font-light tracking-wide text-accent lowercase before:h-px before:w-8 before:bg-accent/60 before:content-[''];
+  }
+  .display {
+    @apply font-light tracking-[-0.03em];
+  }
+  .tag {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[0.75rem] leading-tight lowercase;
+  }
+}
+
+/* ---------- The draw ---------- */
+
+.bracket {
+  --connector: 1px solid var(--line-strong);
+  --gap: 1.1rem;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding: 0.25rem 0.5rem 1.5rem 0.25rem;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 16.5rem;
+}
+
+/*
+  Phones: the same bracket, swiped sideways a round at a time. Each round takes most of the width
+  so the next one (and the lines leading to it) peeks in from the right.
+*/
+@media (max-width: 767px) {
+  .bracket {
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .bracket-round,
+  .bracket-champion {
+    width: min(70vw, 17rem);
+    scroll-snap-align: start;
+  }
+  .bracket-champion {
+    padding-right: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .bracket.is-doubles .bracket-round {
+    width: 19.5rem;
+  }
+}
+
+.bracket-round-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.bracket-pair {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-right: calc(var(--gap) * 2);
+}
+
+.bracket-slot {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 1.6rem 0;
+}
+
+.bracket-round + .bracket-round .bracket-slot,
+.bracket-round + .bracket-champion {
+  padding-left: var(--gap);
+}
+
+.bracket-pair.is-joined::after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  right: var(--gap);
+  width: var(--gap);
+  border: var(--connector);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.bracket-pair.has-next::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--gap) * -1);
+  width: calc(var(--gap) * 2);
+  border-top: var(--connector);
+}
+
+.bracket-pair.is-single.has-next::before {
+  width: calc(var(--gap) * 3);
+}
+
+/* Full-width band inside the centred page frame. */
+.bleed {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
